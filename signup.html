@@ -1,0 +1,70 @@
+<html>
+<head>
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css" type="text/css">
+    <script type="text/javascript" src="bootstrap/js/jquery-3.5.0.min.js"></script>
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="newcss.css">
+</head>
+<body>
+    <div class="container">
+        <div class="row pd ct">
+            <div class="col-xs-4 col-xs-offset-4">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <h4>Create Account</h4>
+                        <b class="text-danger">{{ error }}</b>
+                    </div>
+
+                    <div class="panel-body">
+
+                        
+                        <form  method="POST" action="{{ url_for('signup') }}">
+                            <div class="form-group">
+                                <input type="text" class="form-control" name="Holdername" placeholder="Enter Holdername" value="">
+                            </div>
+                            <div class="form-group">
+                                <input type="text" class="form-control" name="IFSCcode" placeholder="Enter IFSCcode" value="">
+                            </div>
+                           
+                            <div class="form-group">
+                                <input type="text" class="form-control" name="Accountnumber" placeholder="Enter Account Number" value="">
+                            </div>
+                            <div class="form-group">
+                                <input type="text" class="form-control" name="BankName" placeholder="Enter Bank Name" value="">
+                            </div>
+                            <div class="form-group">
+                                <input type="text" class="form-control" name="BranchName" placeholder="Enter Branch Name" value="">
+                            </div>
+                            <div class="form-group">
+                                <input type="text" class="form-control" name="MobileNumber" placeholder="Enter Mobile number" value="">
+                            </div>
+                            <div class="form-group">
+                                <input type="password" class="form-control" name="Password" placeholder="Enter Password">
+                            </div>
+                            <div class="form-group">
+                                <input type="password" class="form-control" name="ConfirmPassword" placeholder="ConfirmPassword">
+                            </div>
+
+                            <div class="form-group">
+                                <button class="btn btn-primary">Register</button>
+                            </div>
+
+ 
+
+                        </form>
+                    </div>
+ 
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="p">
+
+ 
+
+</div>
+</body>
+</html>
