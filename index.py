@@ -1,0 +1,155 @@
+from flask import *
+import pandas as pd
+from sklearn.preprocessing import LabelEncoder
+from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.metrics import accuracy_score
+import mysql.connector
+
+    
+
+db = mysql.connector.connect(
+host = "localhost",
+user = "root",
+password = "",
+database = "banking"
+)
+mycursor = db.cursor()
+
+ 
+
+
+app=Flask(__name__)
+
+ 
+
+@app.route("/",methods=['GET','POST'])
+def login():
+    if request.method=="POST":
+        Acc = int(request.form['AccountNumber'])
+        Pwd = request.form['Password']
+        print(Acc,Pwd)
+        query = "SELECT * FROM `details` WHERE Account=(%s) and password=(%s)"
+        values = (Acc,Pwd,)
+        mycursor.execute(query,values)
+        Records = mycursor.fetchall() 
+        print(len(Records))
+        if len(Records)==1 and int(Records[0][2])==Acc and Records[0][6]==Pwd:
+            return dashboard()
+        elif len(Records)>1 or len(Records)<1:
+            return render_template("home.html", error="Invalid Details")
+        else:
+            return render_template("home.html", error="Invalid Details")
+    else:
+        return render_template("home.html", error="")
+
+ 
+@app.route("/dashboard",methods=["GET","POST"])
+def dashboard():
+    return render_template("mainpage.html")
+
+
+@app.route("/signup", methods=['GET','POST'])
+def signup():
+    if request.method=="POST":
+        Hname=request.form['Holdername'] 
+        Ifsc=request.form['IFSCcode']
+        Accno=request.form['Accountnumber']
+        Bname=request.form['BankName']
+        Brname=request.form['BranchName']
+        Mblno=request.form['MobileNumber']
+        password2=request.form['Password']
+        cpwd=request.form['ConfirmPassword']
+        signupdata = request.form
+        #return render_template("home.html")
+        if(password2==cpwd):
+            signupdata = request.form
+            query2 = "INSERT INTO details SET name=(%s),IFSCcode=(%s),Account=(%s),Bname=(%s),Brname=(%s),mblnum=(%s),password=(%s)"
+            values2 = (Hname,Ifsc,Accno,Bname,Brname,Mblno,password2,)
+            print(values2)
+            mycursor.execute(query2,values2)
+            db.commit()
+            return render_template("home.html", error='')
+        else:
+            return render_template("signup.html",error="Password mismatch", data=signupdata)
+    else:
+        return render_template("signup.html", error='', data='')
+
+@app.route("/mainpage",methods=['GET','POST'])
+def mainpage():
+    if request.method=="POST":
+        age=request.form['age']
+        job=request.form['job']
+        marital=request.form['marital']
+        edu=request.form['education']
+        defa=request.form['default']
+        house=request.form['housing']
+        loan=request.form['loan']
+        contact=request.form['contact']
+        mon=request.form['month']
+        day=request.form['day_of_week']
+        dur=request.form['duration']
+        cam=request.form['campaign']
+        pred=request.form['pdays']
+        prev=request.form['previous']
+        pout=request.form['poutcome']
+        emr=request.form['emp.var.rate']
+        conp=request.form['cons.price.idx']
+        conc=request.form['cons.conf.idx']
+        eur=request.form['euribor3m']
+        nemp=request.form['nr.employed']
+
+        data1=[]  
+        # print(request.form)
+        data1.append(request.form['age'])
+        data1.append(request.form['job'])
+        data1.append(request.form['marital'])
+        data1.append(request.form['education'])
+        data1.append(request.form['default'])
+        data1.append(request.form['housing'])
+        data1.append(request.form['loan'])
+        data1.append(request.form['contact'])
+        data1.append(request.form['month'])
+        data1.append(request.form['day_of_week'])
+        data1.append(request.form['duration'])
+        data1.append(request.form['campaign'])
+        data1.append(request.form['pdays'])
+        data1.append(request.form['previous'])
+        data1.append(request.form['poutcome'])
+        data1.append(request.form['emp.var.rate'])
+        data1.append(request.form['cons.price.idx'])
+        data1.append(request.form['cons.conf.idx'])
+        data1.append(request.form['euribor3m'])
+        data1.append(request.form['nr.employed'])
+        
+        data=pd.read_csv(r'C:\Users\SATYA\Downloads\bank-additional\bank-additional.csv')
+        #print(data.head())
+        #print(data.shape)
+        data=data.dropna()
+        le=LabelEncoder()
+        data['job']=le.fit_transform(data['job'])
+        data['marital']=le.fit_transform(data['marital'])
+        data['education']=le.fit_transform(data['education'])
+        data['default']=le.fit_transform(data['default'])
+        data['housing']=le.fit_transform(data['housing'])
+        data['loan']=le.fit_transform(data['loan'])
+        data['contact']=le.fit_transform(data['contact'])
+        data['month']=le.fit_transform(data['month'])
+        data['day_of_week']=le.fit_transform(data['day_of_week'])
+        data['poutcome']=le.fit_transform(data['poutcome'])
+        data=data.fillna(0)
+        x=data.iloc[ : ,:-1].values
+        y=data.iloc[:,-1].values
+        xtrain,xtest,ytrain,ytest=train_test_split(x,y,random_state=8,test_size=0.2)
+        model=DecisionTreeClassifier(criterion='entropy')#gini
+        model.fit(xtrain,ytrain)
+        ypred=model.predict(xtest)
+        res1=accuracy_score(ytest,ypred)*100
+        res=model.predict([data1])
+        print(res1,res[0])
+        return render_template("new.html",acc=res1,pre=res[0])
+    return render_template("mainpage.html", acc="",pre="")
+
+
+if __name__=="__main__":
+    app.run(debug=True)
