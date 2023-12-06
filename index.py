@@ -22,7 +22,7 @@ mycursor = db.cursor()
 app=Flask(__name__)
 
  
-
+#decorator- to build url pattern to specific function.
 @app.route("/",methods=['GET','POST'])
 def login():
     if request.method=="POST":
